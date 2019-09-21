@@ -30,6 +30,7 @@ public class Robot extends TimedRobot {
   int numCyclesComplete = 0;
   double avgVelo = 0;
   boolean localFlag = false;
+  double totVelo = 0;
 
   /**
    * This function is run when the robot is first started up and should be used
@@ -48,12 +49,14 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousPeriodic() {
     _chassis.updateAuton();
-    avgVelo = ((numCyclesComplete / (numCyclesComplete + 1)) * avgVelo) + (_chassis.getFwdVelo() / (numCyclesComplete + 1));
     numCyclesComplete++;
+    totVelo += _chassis.getFwdVelo();
     if (_chassis.getFlag() && !localFlag) {
+      avgVelo = totVelo/numCyclesComplete;
       System.out.println("AVERAGE VELO: " + avgVelo);
       localFlag = true;
     }
+    System.out.println("velo: " + _chassis.getFwdVelo());
   }
 
   @Override
