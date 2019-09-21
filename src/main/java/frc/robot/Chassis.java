@@ -10,13 +10,15 @@ import edu.wpi.first.wpilibj.Timer;
 public class Chassis{
     private static final Chassis _instance = new Chassis();
 
-    public enum autonState {DRIVE_SET_DISTANCE, DO_NOTHING, FIXED_VBUS}
+    public enum autonState {DRIVE_SET_DISTANCE, DO_NOTHING, FIXED_VBUS, GET_MAX_VELO};
 
     private double _fixedAutoVBUS = 0;
     public autonState _mAutonState = autonState.DO_NOTHING;
     public double _targetPosition = 0;
     private double _autonStartTime = -1;
     private double _fixedVBusMaxTime = -1;
+
+    private boolean flag = false;
 
     private final double kDriveSetDistanceErrorEpsilon = .5; //inches
 
@@ -28,7 +30,8 @@ public class Chassis{
     final double ENCODER_COUNTS_PER_MOTOR_ROTATION = 224; //encoder counts per rotation
     final double GEARBOX_RATIO = 8.45; //unitless //Ratio of Wheel rotations per gear rotations
     final double WHEEL_DIAMETER = 6; //inches
-    final double INCHES_PER_ENCODER_COUNT = 120/54.77; //WHEEL_DIAMETER * Math.PI * GEARBOX_RATIO / ENCODER_COUNTS_PER_MOTOR_ROTATION;
+    final double INCHES_PER_ENCODER_COUNT = 120/54.77; //WHEEL_DIAMETER * Math.PI * GEARBOX_RATIO / ENCODER_COUNTS_PER_MOTOR_ROTATION; //This is an Empirical Value
+    final double kVelocityConversionFactor = 1; //empirical
     final int kTimeoutMilliseconds = 5;
 
     final double kP_straight = 0;
@@ -73,6 +76,8 @@ public class Chassis{
         _rightSlave.burnFlash();
         _leftEncoder.setPositionConversionFactor(INCHES_PER_ENCODER_COUNT);
         _rightEncoder.setPositionConversionFactor(INCHES_PER_ENCODER_COUNT);
+        _leftEncoder.setVelocityConversionFactor(kVelocityConversionFactor);
+        _rightEncoder.setVelocityConversionFactor(kVelocityConversionFactor);
         System.out.println("IPEC: " + INCHES_PER_ENCODER_COUNT);
         zeroEncoders();
     }
@@ -188,9 +193,18 @@ public class Chassis{
                 if (! isDriveFixedVBusFinished()){
                     updateDriveFixedVBus();
                 } else {
+                    flag = true;
                     stop();
                     _mAutonState = autonState.DO_NOTHING;
                 }
           }
+      }
+
+      public double getFwdVelo(){
+          return .5 * (_leftEncoder.getVelocity() + _rightEncoder.getVelocity());
+      }
+
+      public boolean getFlag(){
+          return flag;
       }
 }

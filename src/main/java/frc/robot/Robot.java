@@ -27,6 +27,8 @@ public class Robot extends TimedRobot {
   double autoDistance = 0;
   double fixedVBus = .3;
   double fixedVBusTime = 2.5;
+  int numCyclesComplete = 0;
+  double avgVelo = 0;
 
   /**
    * This function is run when the robot is first started up and should be used
@@ -45,6 +47,11 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousPeriodic() {
     _chassis.updateAuton();
+    avgVelo = (numCyclesComplete / (numCyclesComplete + 1)) * avgVelo + _chassis.getFwdVelo() / (numCyclesComplete + 1);
+    numCyclesComplete++;
+    if (_chassis.getFlag()) {
+      System.out.println("AVERAGE VELO: " + avgVelo);
+    }
   }
 
   @Override
