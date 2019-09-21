@@ -18,8 +18,6 @@ public class Chassis{
     private double _autonStartTime = -1;
     private double _fixedVBusMaxTime = -1;
 
-    private boolean flag = false;
-
     private final double kDriveSetDistanceErrorEpsilon = .5; //inches
 
     private CANSparkMax _leftMaster = new CANSparkMax(1, MotorType.kBrushless);
@@ -32,7 +30,9 @@ public class Chassis{
     final double WHEEL_DIAMETER = 6; //inches
     final double INCHES_PER_ENCODER_COUNT = 120/54.77; //WHEEL_DIAMETER * Math.PI * GEARBOX_RATIO / ENCODER_COUNTS_PER_MOTOR_ROTATION; //This is an Empirical Value
     final double kVelocityConversionFactor = 5.633074; //empirical
-    final int kTimeoutMilliseconds = 5;
+        final int kTimeoutMilliseconds = 5;
+
+    private boolean flag = false;
 
     final double kP_straight = 0;
     final double kI_straight = 0;
@@ -41,6 +41,7 @@ public class Chassis{
   
     CANEncoder _leftEncoder = new CANEncoder(_leftMaster);
     CANEncoder _rightEncoder = new CANEncoder(_rightMaster);
+    final double kTheoreticalVelocityConversionFactor = INCHES_PER_ENCODER_COUNT / (.5 * (_leftEncoder.getMeasurementPeriod() + _rightEncoder.getMeasurementPeriod()));
   
     CANPIDController _straightLeftPIDController = new CANPIDController(_leftMaster);
     CANPIDController _straightRightPIDController = new CANPIDController(_rightMaster);
@@ -76,8 +77,8 @@ public class Chassis{
         _rightSlave.burnFlash();
         _leftEncoder.setPositionConversionFactor(INCHES_PER_ENCODER_COUNT);
         _rightEncoder.setPositionConversionFactor(INCHES_PER_ENCODER_COUNT);
-        _leftEncoder.setVelocityConversionFactor(kVelocityConversionFactor);
-        _rightEncoder.setVelocityConversionFactor(kVelocityConversionFactor);
+        _leftEncoder.setVelocityConversionFactor(kTheoreticalVelocityConversionFactor);
+        _rightEncoder.setVelocityConversionFactor(kTheoreticalVelocityConversionFactor);
         System.out.println("IPEC: " + INCHES_PER_ENCODER_COUNT);
         zeroEncoders();
     }
@@ -141,7 +142,10 @@ public class Chassis{
           _fixedAutoVBUS = vbus;
           _fixedVBusMaxTime = time;
           _mAutonState = autonState.FIXED_VBUS;
-      }
+        System.out.println("SAMPLE TIME: " + .0005 * _leftEncoder.getMeasurementPeriod());
+        System.out.println("EMPIRICAL CONVERSION FACTOR: " + _leftEncoder.getVelocityConversionFactor());
+        System.out.println("THEORETICAL CONVERSION FACTOR: " + kTheoreticalVelocityConversionFactor);
+    }
 
       public void updateDriveFixedVBus(){
           setLeftRightCmd(_fixedAutoVBUS, _fixedAutoVBUS);
@@ -207,4 +211,5 @@ public class Chassis{
       public boolean getFlag(){
           return flag;
       }
+
 }

@@ -7,6 +7,7 @@
 
 package frc.robot;
 
+import java.util.Arrays;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
@@ -25,11 +26,12 @@ public class Robot extends TimedRobot {
   Chassis _chassis = Chassis.getInstance();
   XboxController controller = new XboxController(0);
   double autoDistance = 0;
-  double fixedVBus = .4;
-  double fixedVBusTime = 3;
-  int numCyclesComplete = 0;
-  double avgVelo = 0;
+  double fixedVBus = .3;
+  double fixedVBusTime = 2;
+  double[] velos = {0., 0., 0., 0. , 0.};
+  int numCycles = 0;
   boolean localFlag = false;
+
 
   /**
    * This function is run when the robot is first started up and should be used
@@ -48,11 +50,27 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousPeriodic() {
     _chassis.updateAuton();
-    avgVelo = ((numCyclesComplete / (numCyclesComplete + 1)) * avgVelo) + (_chassis.getFwdVelo() / (numCyclesComplete + 1));
-    numCyclesComplete++;
-    if (_chassis.getFlag() && !localFlag) {
-      System.out.println("AVERAGE VELO: " + avgVelo);
+    if (numCycles % 10 == 0 && !_chassis.getFlag()){
+      System.out.println("velo: " +_chassis.getFwdVelo());
+    }
+    if (numCycles < 5){
+      velos[numCycles] = _chassis.getFwdVelo();
+      numCycles++;
+    } else {
+      numCycles++;
+      java.util.Arrays.sort(velos);
+      double velo = _chassis.getFwdVelo();
+      if (velo > velos[0]){
+        velos[0] = velo;
+      }
+    }
+    if (_chassis.getFlag() && !localFlag){
       localFlag = true;
+      double avgMaxVelo = 0;
+      for (int i = 0; i<5; i++){
+        avgMaxVelo += .2 * velos[i];
+      }
+      System.out.println("MAX VELO: " + avgMaxVelo);
     }
   }
 
