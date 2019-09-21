@@ -31,7 +31,7 @@ public class Chassis{
     final double GEARBOX_RATIO = 8.45; //unitless //Ratio of Wheel rotations per gear rotations
     final double WHEEL_DIAMETER = 6; //inches
     final double INCHES_PER_ENCODER_COUNT = 120/54.77; //WHEEL_DIAMETER * Math.PI * GEARBOX_RATIO / ENCODER_COUNTS_PER_MOTOR_ROTATION; //This is an Empirical Value
-    final double kVelocityConversionFactor = 1; //empirical
+    final double kVelocityConversionFactor = 5.633074; //empirical
     final int kTimeoutMilliseconds = 5;
 
     final double kP_straight = 0;

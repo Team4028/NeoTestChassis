@@ -25,10 +25,11 @@ public class Robot extends TimedRobot {
   Chassis _chassis = Chassis.getInstance();
   XboxController controller = new XboxController(0);
   double autoDistance = 0;
-  double fixedVBus = .3;
-  double fixedVBusTime = 2.5;
+  double fixedVBus = .4;
+  double fixedVBusTime = 3;
   int numCyclesComplete = 0;
   double avgVelo = 0;
+  boolean localFlag = false;
 
   /**
    * This function is run when the robot is first started up and should be used
@@ -47,10 +48,11 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousPeriodic() {
     _chassis.updateAuton();
-    avgVelo = (numCyclesComplete / (numCyclesComplete + 1)) * avgVelo + _chassis.getFwdVelo() / (numCyclesComplete + 1);
+    avgVelo = ((numCyclesComplete / (numCyclesComplete + 1)) * avgVelo) + (_chassis.getFwdVelo() / (numCyclesComplete + 1));
     numCyclesComplete++;
-    if (_chassis.getFlag()) {
+    if (_chassis.getFlag() && !localFlag) {
       System.out.println("AVERAGE VELO: " + avgVelo);
+      localFlag = true;
     }
   }
 
