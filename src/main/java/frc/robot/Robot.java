@@ -25,12 +25,13 @@ public class Robot extends TimedRobot {
   Chassis _chassis = Chassis.getInstance();
   XboxController controller = new XboxController(0);
   double autoDistance = 0;
-  double fixedVBus = .4;
-  double fixedVBusTime = 3;
+  double fixedVBus = .3;
+  double fixedVBusTime = 2;
   int numCyclesComplete = 0;
   double avgVelo = 0;
   boolean localFlag = false;
   double totVelo = 0;
+  double[] velos = new double[5];
 
   /**
    * This function is run when the robot is first started up and should be used
@@ -49,15 +50,33 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousPeriodic() {
     _chassis.updateAuton();
-    numCyclesComplete++;
-    totVelo += _chassis.getFwdVelo();
-    if (_chassis.getFlag() && !localFlag) {
-      avgVelo = totVelo/numCyclesComplete;
-      System.out.println("AVERAGE VELO: " + avgVelo);
-      localFlag = true;
+
+    if(!_chassis.getFlag() && numCyclesComplete % 10 == 0){
+      System.out.println("VELOCITY: " + _chassis.getFwdVelo());
     }
-    System.out.println("velo: " + _chassis.getFwdVelo());
-  }
+
+    if (!_chassis.getFlag()){
+      numCyclesComplete++;
+      if (numCyclesComplete < 5){
+        velos[numCyclesComplete-1] =  _chassis.getFwdVelo();
+      } else {
+        java.util.Arrays.sort(velos);
+        double velo = _chassis.getFwdVelo();
+        if (velo > velos[0]){
+          velos[0] = velo;
+        }
+      }
+    }
+
+    if (_chassis.getFlag() && !localFlag){
+      localFlag = true;
+      double avgMaxVelo = 0;
+      for (int i = 0; i<5; i++){
+        avgMaxVelo += .2 * velos[i];
+      }
+      System.out.println("MAX VELO: " + avgMaxVelo);
+    }
+}
 
   @Override
   public void teleopInit() {
