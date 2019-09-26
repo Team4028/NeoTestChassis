@@ -33,6 +33,7 @@ public class Chassis{
     final double INCHES_PER_ENCODER_COUNT = 120/54.77; //WHEEL_DIAMETER * Math.PI * GEARBOX_RATIO / ENCODER_COUNTS_PER_MOTOR_ROTATION; //This is an Empirical Value
     final double kVelocityConversionFactor = 0.0399605247193; //empirical
     final int kTimeoutMilliseconds = 5;
+    final double maxVelo = 190.0; //Empirical //191.2 exactly measured but this constant is unused as of right now. 
 
     final double kP_straight = 0;
     final double kI_straight = 0;
@@ -176,6 +177,7 @@ public class Chassis{
 
       private void stop(){
           setLeftRightCmd(0, 0);
+          setIsBrakeMode(true);
       }
 
       public void updateAuton(){

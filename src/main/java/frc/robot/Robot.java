@@ -25,10 +25,11 @@ public class Robot extends TimedRobot {
   Chassis _chassis = Chassis.getInstance();
   XboxController controller = new XboxController(0);
   double autoDistance = 0;
-  double fixedVBus = .3;
-  double fixedVBusTime = 2;
-  int numCyclesComplete = 0;
+  double fixedVBus = 1;
+  double fixedVBusTime = 2.5;
+  int numCyclesComplete = 0;                
   double avgVelo = 0;
+  boolean hasBugs = false;
   boolean localFlag = false;
   double totVelo = 0;
   double[] velos = new double[5];
