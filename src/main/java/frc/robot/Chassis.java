@@ -33,12 +33,13 @@ public class Chassis{
     final double INCHES_PER_ENCODER_COUNT = 120/54.77; //WHEEL_DIAMETER * Math.PI * GEARBOX_RATIO / ENCODER_COUNTS_PER_MOTOR_ROTATION; //This is an Empirical Value
     final double kVelocityConversionFactor = 0.0399605247193; //empirical
     final int kTimeoutMilliseconds = 5;
-    final double maxVelo = 190.0; //Empirical //191.2 exactly measured but this constant is unused as of right now. 
+    final double kMaxVelo = 190.0; //Empirical //191.2 exactly measured but this constant is unused as of right now. 
 
-    final double kP_straight = 0;
-    final double kI_straight = 0;
-    final double kD_straight = 0;
-    final double kFF_straight = 0;
+    final double kMult_straight =  1 / kMaxVelo;
+    final double kP_straight = 0.1 * kMult_straight;
+    final double kI_straight = 0. * kMult_straight;
+    final double kD_straight = 0. * kMult_straight;
+    final double kFF_straight = 0.;
   
     CANEncoder _leftEncoder = new CANEncoder(_leftMaster);
     CANEncoder _rightEncoder = new CANEncoder(_rightMaster);
