@@ -173,8 +173,9 @@ public class Chassis{
       public void updateDriveSetDistance(){
         _straightLeftPIDController.setReference(_targetPosition, ControlType.kPosition);
         _straightRightPIDController.setReference(_targetPosition, ControlType.kPosition);
-        System.out.println(_targetPosition - .5 * (_leftEncoder.getPosition() + _rightEncoder.getPosition()));
-      }
+        System.out.println("ERROR: " + Double.toString(_targetPosition - .5 * (_leftEncoder.getPosition() + _rightEncoder.getPosition())));
+        System.out.println("MOTOR OUTPUT: " + Double.toString(.5 * (_leftMaster.getAppliedOutput() + _rightMaster.getAppliedOutput())));
+    }
 
       public void initAutonStartTime(){
         _autonStartTime = Timer.getFPGATimestamp();
