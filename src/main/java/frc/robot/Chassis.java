@@ -1,6 +1,7 @@
 package frc.robot;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.CANEncoder;
@@ -34,9 +35,12 @@ public class Chassis{
     final double kVelocityConversionFactor = 0.0399605247193; //empirical
     final int kTimeoutMilliseconds = 5;
     final double kMaxVelo = 190.0; //Empirical //191.2 exactly measured but this constant is unused as of right now. 
+    final double kNativeAccelConversionFactor = GEARBOX_RATIO * Math.PI * WHEEL_DIAMETER / 60; // Rotation seconds per minute inch
 
-    final double kMult_straight =  1 / kMaxVelo;
-    final double kP_straight = 0.1 * kMult_straight;
+    final double kStraightMaxSpeedRampTime = 10;
+    final double kStraightMaxAccelRPMPS = (kMaxVelo / kStraightMaxSpeedRampTime) / kNativeAccelConversionFactor;
+    final double kMult_straight =  1;
+    final double kP_straight = .02 * kMult_straight;
     final double kI_straight = 0. * kMult_straight;
     final double kD_straight = 0. * kMult_straight;
     final double kFF_straight = 0.;
@@ -80,7 +84,6 @@ public class Chassis{
         _rightEncoder.setPositionConversionFactor(INCHES_PER_ENCODER_COUNT);
         _leftEncoder.setVelocityConversionFactor(kVelocityConversionFactor);
         _rightEncoder.setVelocityConversionFactor(kVelocityConversionFactor);
-        System.out.println("IPEC: " + INCHES_PER_ENCODER_COUNT);
         zeroEncoders();
     }
 
@@ -149,14 +152,28 @@ public class Chassis{
           setLeftRightCmd(_fixedAutoVBUS, _fixedAutoVBUS);
       }
 
+      public void setStraightPIDFF(double[] pidff){
+          _straightLeftPIDController.setP(pidff[0]);
+          _straightRightPIDController.setP(pidff[0]);
+          _straightLeftPIDController.setI(pidff[1]);
+          _straightRightPIDController.setI(pidff[1]);
+          _straightLeftPIDController.setD(pidff[2]);
+          _straightRightPIDController.setD(pidff[2]);
+          _straightLeftPIDController.setFF(pidff[3]);
+          _straightRightPIDController.setFF(pidff[3]);
+      }
+
       public void configDriveSetDistance(double targetPos){
-          _targetPosition = targetPos;
+          double[] pidffConstants = {kP_straight, kI_straight, kD_straight, kFF_straight};
+          setStraightPIDFF(pidffConstants);
+          _straightLeftPIDController.setSmartMotionMaxAccel(kStraightMaxAccelRPMPS, 0);          _targetPosition = targetPos;
           _mAutonState = autonState.DRIVE_SET_DISTANCE;
       }
 
       public void updateDriveSetDistance(){
-          _leftMaster.pidWrite(_targetPosition);
-          _rightMaster.pidWrite(_targetPosition);
+        _straightLeftPIDController.setReference(_targetPosition, ControlType.kPosition);
+        _straightRightPIDController.setReference(_targetPosition, ControlType.kPosition);
+        System.out.println(_targetPosition - .5 * (_leftEncoder.getPosition() + _rightEncoder.getPosition()));
       }
 
       public void initAutonStartTime(){
@@ -172,8 +189,13 @@ public class Chassis{
       }
 
       public boolean isDriveSetDistanceFinished(){
-          return (Math.abs(_leftEncoder.getPosition() - _targetPosition) < kDriveSetDistanceErrorEpsilon) 
-                 && (Math.abs(_rightEncoder.getPosition() - _targetPosition) < kDriveSetDistanceErrorEpsilon);        
+          if ((Math.abs(_leftEncoder.getPosition() - _targetPosition) < kDriveSetDistanceErrorEpsilon) 
+                    && (Math.abs(_rightEncoder.getPosition() - _targetPosition) < kDriveSetDistanceErrorEpsilon)){
+                        System.out.println("PID LOOP TERMINATING");
+                        return true;
+          } else {
+              return false;
+          }
       }
 
       private void stop(){
