@@ -86,6 +86,9 @@ public class Robot extends TimedRobot {
       if (controller.getBButtonReleased()){
         printEncoderPositions();
       }
+      if (controller.getStartButtonReleased()) {
+        System.out.println("CMD VALUE: " + controller.getY(Hand.kLeft));
+      }
     }
 
     public void printEncoderPositions(){
