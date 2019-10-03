@@ -77,8 +77,8 @@ public class Robot extends TimedRobot {
     }
 
     public void teleopChassis(){
-      double throttle = -controller.getY(Hand.kLeft);
-      double turn = -controller.getX(Hand.kRight);
+      double throttle = controller.getY(Hand.kLeft);
+      double turn = controller.getX(Hand.kRight);
       _chassis.arcadeDriveCmd(throttle, turn);
       if (controller.getAButtonReleased()){
         _chassis.zeroEncoders();

@@ -41,7 +41,7 @@ public class Chassis{
     final double kStraightMaxSpeedRampTime = 10;
     final double kStraightMaxAccelRPMPS = (kMaxVelo / kStraightMaxSpeedRampTime) / kNativeAccelConversionFactor;
     final double kMult_straight =  1;
-    final double kP_straight =  .1 * kMult_straight;
+    final double kP_straight =  .02 * kMult_straight;
     final double kI_straight = 0. * kMult_straight;
     final double kD_straight = 0. * kMult_straight;
     final double kFF_straight = 0.;
@@ -65,10 +65,10 @@ public class Chassis{
         int currentLimit = 60;
         _leftSlave.follow(_leftMaster);
         _rightSlave.follow(_rightMaster);
-        _rightMaster.setInverted(true);
-        _rightSlave.setInverted(true);
-        _leftMaster.setInverted(false);
-        _leftSlave.setInverted(false);
+        _rightMaster.setInverted(false);
+        _rightSlave.setInverted(false);
+        _leftMaster.setInverted(true);
+        _leftSlave.setInverted(true);
         _leftMaster.setCANTimeout(kTimeoutMilliseconds);
         _leftSlave.setCANTimeout(kTimeoutMilliseconds);
         _rightMaster.setCANTimeout(kTimeoutMilliseconds);
@@ -89,7 +89,7 @@ public class Chassis{
         _rightEncoder.setVelocityConversionFactor(kVelocityConversionFactor);
         zeroEncoders();
     }
-
+    
     public void setIsBrakeMode(boolean isBrakeMode){
         if(isBrakeMode){
             _leftMaster.setIdleMode(IdleMode.kBrake);
