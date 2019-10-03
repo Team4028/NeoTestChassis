@@ -2,6 +2,7 @@ package frc.robot;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.ControlType;
+import com.revrobotics.CANPIDController.AccelStrategy;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.CANEncoder;
@@ -40,11 +41,13 @@ public class Chassis{
     final double kStraightMaxSpeedRampTime = 10;
     final double kStraightMaxAccelRPMPS = (kMaxVelo / kStraightMaxSpeedRampTime) / kNativeAccelConversionFactor;
     final double kMult_straight =  1;
-    final double kP_straight = .02 * kMult_straight;
+    final double kP_straight =  .5; //.02 * kMult_straight;
     final double kI_straight = 0. * kMult_straight;
     final double kD_straight = 0. * kMult_straight;
     final double kFF_straight = 0.;
-  
+
+    final double kMaxStraightErrorMotorRot = kDriveSetDistanceErrorEpsilon / (Math.PI * WHEEL_DIAMETER * GEARBOX_RATIO);
+    final double kMaxVelocityRPM = kMaxVelo * 60 / (Math.PI * WHEEL_DIAMETER * GEARBOX_RATIO);
     CANEncoder _leftEncoder = new CANEncoder(_leftMaster);
     CANEncoder _rightEncoder = new CANEncoder(_rightMaster);
   
@@ -166,13 +169,24 @@ public class Chassis{
       public void configDriveSetDistance(double targetPos){
           double[] pidffConstants = {kP_straight, kI_straight, kD_straight, kFF_straight};
           setStraightPIDFF(pidffConstants);
-          _straightLeftPIDController.setSmartMotionMaxAccel(kStraightMaxAccelRPMPS, 0);          _targetPosition = targetPos;
+          _straightLeftPIDController.setSmartMotionMaxAccel(kStraightMaxAccelRPMPS, 0);
+          _straightRightPIDController.setSmartMotionMaxAccel(kStraightMaxAccelRPMPS, 0);
+          _straightLeftPIDController.setSmartMotionAccelStrategy(AccelStrategy.kTrapezoidal, 0);
+          _straightRightPIDController.setSmartMotionAccelStrategy(AccelStrategy.kTrapezoidal, 0);
+          _straightLeftPIDController.setSmartMotionAllowedClosedLoopError(kMaxStraightErrorMotorRot, 0);
+          _straightRightPIDController.setSmartMotionAllowedClosedLoopError(kMaxStraightErrorMotorRot, 0);
+          _straightLeftPIDController.setSmartMotionMinOutputVelocity(0, 0);
+          _straightRightPIDController.setSmartMotionMinOutputVelocity(0, 0);
+          _straightLeftPIDController.setSmartMotionMaxVelocity(, 0);
+          _straightRightPIDController.setSmartMotionMaxVelocity(, 0);
+          _targetPosition = targetPos;
           _mAutonState = autonState.DRIVE_SET_DISTANCE;
       }
 
       public void updateDriveSetDistance(){
-        _straightLeftPIDController.setReference(_targetPosition, ControlType.kPosition);
-        _straightRightPIDController.setReference(_targetPosition, ControlType.kPosition);
+          _straightLeftPIDController.smart
+        _straightLeftPIDController.setReference(_targetPosition, ControlType.kSmartMotion, 0);
+        _straightRightPIDController.setReference(_targetPosition, ControlType.kSmartMotion, 0);
         System.out.println("ERROR: " + Double.toString(_targetPosition - .5 * (_leftEncoder.getPosition() + _rightEncoder.getPosition())));
         System.out.println("MOTOR OUTPUT: " + Double.toString(.5 * (_leftMaster.getAppliedOutput() + _rightMaster.getAppliedOutput())));
     }
