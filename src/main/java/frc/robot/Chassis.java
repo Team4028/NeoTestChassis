@@ -65,10 +65,10 @@ public class Chassis{
         int currentLimit = 60;
         _leftSlave.follow(_leftMaster);
         _rightSlave.follow(_rightMaster);
-        _rightMaster.setInverted(false);
-        _rightSlave.setInverted(false);
-        _leftMaster.setInverted(true);
-        _leftSlave.setInverted(true);
+        _rightMaster.setInverted(true);
+        _rightSlave.setInverted(true);
+        _leftMaster.setInverted(false);
+        _leftSlave.setInverted(false);
         _leftMaster.setCANTimeout(kTimeoutMilliseconds);
         _leftSlave.setCANTimeout(kTimeoutMilliseconds);
         _rightMaster.setCANTimeout(kTimeoutMilliseconds);
