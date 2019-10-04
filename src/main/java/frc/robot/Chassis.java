@@ -41,10 +41,10 @@ public class Chassis{
     final double kStraightMaxSpeedRampTime = 10;
     final double kStraightMaxAccelRPMPS = (kMaxVelo / kStraightMaxSpeedRampTime) / kNativeAccelConversionFactor;
     final double kMult_straight =  1;
-    final double kP_straight =  .02 * kMult_straight;
+    final double kP_straight =  .005 * kMult_straight;
     final double kI_straight = 0. * kMult_straight;
     final double kD_straight = 0. * kMult_straight;
-    final double kFF_straight = 0.;
+    final double kFF_straight = 0.075 * kMult_straight;
 
     final double kMaxStraightErrorMotorRot = kDriveSetDistanceErrorEpsilon / (Math.PI * WHEEL_DIAMETER * GEARBOX_RATIO);
     final double kMaxVelocityRPM = kMaxVelo * 60 / (Math.PI * WHEEL_DIAMETER * GEARBOX_RATIO);
@@ -175,8 +175,8 @@ public class Chassis{
           _straightRightPIDController.setSmartMotionAccelStrategy(AccelStrategy.kTrapezoidal, 0);
           _straightLeftPIDController.setSmartMotionAllowedClosedLoopError(kMaxStraightErrorMotorRot, 0);
           _straightRightPIDController.setSmartMotionAllowedClosedLoopError(kMaxStraightErrorMotorRot, 0);
-          _straightLeftPIDController.setSmartMotionMinOutputVelocity(0, 0);
-          _straightRightPIDController.setSmartMotionMinOutputVelocity(0, 0);
+          _straightLeftPIDController.setSmartMotionMinOutputVelocity(-kMaxVelocityRPM, 0);
+          _straightRightPIDController.setSmartMotionMinOutputVelocity(-kMaxVelocityRPM, 0);
           _straightLeftPIDController.setSmartMotionMaxVelocity(kMaxVelocityRPM, 0);
           _straightRightPIDController.setSmartMotionMaxVelocity(kMaxVelocityRPM, 0);
           _targetPosition = targetPos;
