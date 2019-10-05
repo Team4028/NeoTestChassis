@@ -8,11 +8,15 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANPIDController;
 import edu.wpi.first.wpilibj.Timer;
+import frc.robot.Util;
 
 public class Chassis{
     private static final Chassis _instance = new Chassis();
 
     public enum autonState {DRIVE_SET_DISTANCE, DO_NOTHING, FIXED_VBUS, GET_MAX_VELO};
+
+    GyroNavX _gyro = GyroNavX.getInstance();
+
 
     private double _fixedAutoVBUS = 0;
     public autonState _mAutonState = autonState.DO_NOTHING;
@@ -41,10 +45,16 @@ public class Chassis{
     final double kStraightMaxSpeedRampTime = 10;
     final double kStraightMaxAccelRPMPS = (kMaxVelo / kStraightMaxSpeedRampTime) / kNativeAccelConversionFactor;
     final double kMult_straight =  1;
-    final double kP_straight =  .07 * kMult_straight;
+    final double kP_straight =  .02 * kMult_straight;
     final double kI_straight = 0. * kMult_straight;
     final double kD_straight = 0. * kMult_straight;
     final double kFF_straight = 0. * kMult_straight;
+
+    final double kMult_rot = 1;
+    final double kP_turn = .02 * kMult_rot; 
+    final double kI_turn = 0 * kMult_rot;
+    final double kD_turn = 0 * kMult_rot;
+    final double kFF_turn = 0 * kMult_rot;
 
     final double kMaxStraightErrorMotorRot = kDriveSetDistanceErrorEpsilon / (Math.PI * WHEEL_DIAMETER * GEARBOX_RATIO);
     final double kMaxVelocityRPM = .6 * kMaxVelo * 60 / (Math.PI * WHEEL_DIAMETER * GEARBOX_RATIO);
@@ -88,6 +98,7 @@ public class Chassis{
         _leftEncoder.setVelocityConversionFactor(kVelocityConversionFactor);
         _rightEncoder.setVelocityConversionFactor(kVelocityConversionFactor);
         zeroEncoders();
+        _gyro.zeroYaw();
     }
     
     public void setIsBrakeMode(boolean isBrakeMode){
@@ -256,6 +267,10 @@ public class Chassis{
 
       public double getFwdVelo(){
           return .5 * (_leftEncoder.getVelocity() + _rightEncoder.getVelocity());
+      }
+
+      public double getTheta(){
+          return _gyro.getYaw();
       }
 
       public boolean getFlag(){
