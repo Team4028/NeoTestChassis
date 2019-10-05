@@ -41,13 +41,13 @@ public class Chassis{
     final double kStraightMaxSpeedRampTime = 10;
     final double kStraightMaxAccelRPMPS = (kMaxVelo / kStraightMaxSpeedRampTime) / kNativeAccelConversionFactor;
     final double kMult_straight =  1;
-    final double kP_straight =  .005 * kMult_straight;
+    final double kP_straight =  .07 * kMult_straight;
     final double kI_straight = 0. * kMult_straight;
     final double kD_straight = 0. * kMult_straight;
-    final double kFF_straight = 0.075 * kMult_straight;
+    final double kFF_straight = 0. * kMult_straight;
 
     final double kMaxStraightErrorMotorRot = kDriveSetDistanceErrorEpsilon / (Math.PI * WHEEL_DIAMETER * GEARBOX_RATIO);
-    final double kMaxVelocityRPM = kMaxVelo * 60 / (Math.PI * WHEEL_DIAMETER * GEARBOX_RATIO);
+    final double kMaxVelocityRPM = .6 * kMaxVelo * 60 / (Math.PI * WHEEL_DIAMETER * GEARBOX_RATIO);
     CANEncoder _leftEncoder = new CANEncoder(_leftMaster);
     CANEncoder _rightEncoder = new CANEncoder(_rightMaster);
   
@@ -173,12 +173,12 @@ public class Chassis{
           _straightRightPIDController.setSmartMotionMaxAccel(kStraightMaxAccelRPMPS, 0);
           _straightLeftPIDController.setSmartMotionAccelStrategy(AccelStrategy.kTrapezoidal, 0);
           _straightRightPIDController.setSmartMotionAccelStrategy(AccelStrategy.kTrapezoidal, 0);
-          _straightLeftPIDController.setSmartMotionAllowedClosedLoopError(kMaxStraightErrorMotorRot, 0);
-          _straightRightPIDController.setSmartMotionAllowedClosedLoopError(kMaxStraightErrorMotorRot, 0);
-          _straightLeftPIDController.setSmartMotionMinOutputVelocity(-kMaxVelocityRPM, 0);
-          _straightRightPIDController.setSmartMotionMinOutputVelocity(-kMaxVelocityRPM, 0);
-          _straightLeftPIDController.setSmartMotionMaxVelocity(kMaxVelocityRPM, 0);
-          _straightRightPIDController.setSmartMotionMaxVelocity(kMaxVelocityRPM, 0);
+          _straightLeftPIDController.setSmartMotionAllowedClosedLoopError(kMaxStraightErrorMotorRot, 0); //rot
+          _straightRightPIDController.setSmartMotionAllowedClosedLoopError(kMaxStraightErrorMotorRot, 0); //rot
+          _straightLeftPIDController.setSmartMotionMinOutputVelocity(0, 0); //should be defaulted to 0 anyway. Should be nonnegative
+          _straightRightPIDController.setSmartMotionMinOutputVelocity(0, 0); //should be defaulted to 0 anyway, should be nonnegative
+          _straightLeftPIDController.setSmartMotionMaxVelocity(kMaxVelocityRPM, 0); //this isn't for limiting--this is cruise velocity
+          _straightRightPIDController.setSmartMotionMaxVelocity(kMaxVelocityRPM, 0); //this isn't for limiting--this is cruise velocity
           _targetPosition = targetPos;
           _mAutonState = autonState.DRIVE_SET_DISTANCE;
       }
