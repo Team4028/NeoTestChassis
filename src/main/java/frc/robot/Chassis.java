@@ -199,8 +199,8 @@ public class Chassis{
       }
 
       public void updateDriveSetDistance(){
-        _straightLeftPIDController.setReference(_targetPosition, ControlType.kSmartMotion, 0);
-        _straightRightPIDController.setReference(_targetPosition, ControlType.kSmartMotion, 0);
+        _straightLeftPIDController.setReference(_targetPosition, ControlType.kPosition, 0);
+        _straightRightPIDController.setReference(_targetPosition, ControlType.kPosition, 0);
         System.out.println("ERROR: " + Double.toString(_targetPosition - .5 * (_leftEncoder.getPosition() + _rightEncoder.getPosition())));
         System.out.println("MOTOR OUTPUT: " + Double.toString(.5 * (_leftMaster.getAppliedOutput() + _rightMaster.getAppliedOutput())));
     }
