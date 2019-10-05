@@ -104,6 +104,20 @@ public class Chassis{
         }
     }
 
+    public void setRampRate(double rr, boolean isOpen){
+        if (isOpen){
+            _leftMaster.setOpenLoopRampRate(rr);
+            _rightMaster.setOpenLoopRampRate(rr);
+            _leftSlave.setOpenLoopRampRate(rr);
+            _rightSlave.setOpenLoopRampRate(rr);
+        } else {
+            _leftMaster.setClosedLoopRampRate(rr);
+            _rightMaster.setClosedLoopRampRate(rr);
+            _leftSlave.setClosedLoopRampRate(rr);
+            _rightSlave.setClosedLoopRampRate(rr);
+        }
+    }
+
     public void setRampRate(double rampRate){
         _leftMaster.setOpenLoopRampRate(rampRate);
         _leftSlave.setOpenLoopRampRate(rampRate);
@@ -167,6 +181,7 @@ public class Chassis{
       }
 
       public void configDriveSetDistance(double targetPos){
+          setRampRate(kStraightMaxSpeedRampTime, false);
           double[] pidffConstants = {kP_straight, kI_straight, kD_straight, kFF_straight};
           setStraightPIDFF(pidffConstants);
           _straightLeftPIDController.setSmartMotionMaxAccel(kStraightMaxAccelRPMPS, 0);
