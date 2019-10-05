@@ -10,6 +10,7 @@ import com.revrobotics.CANPIDController;
 import edu.wpi.first.wpilibj.Timer;
 
 public class Chassis{
+    /*
     private static final Chassis _instance = new Chassis();
 
     public enum autonState {DRIVE_SET_DISTANCE, DO_NOTHING, FIXED_VBUS, GET_MAX_VELO};
@@ -246,4 +247,5 @@ public class Chassis{
       public boolean getFlag(){
           return flag;
       }
+    */
 }
