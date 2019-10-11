@@ -7,12 +7,6 @@
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.GenericHID.Hand;
-
-import frc.robot.Chassis;
-
 /**
  * The VM is configured to automatically run this class, and to call the
  * functions corresponding to each mode, as described in the TimedRobot
@@ -22,29 +16,20 @@ import frc.robot.Chassis;
  */
 public class Robot extends TimedRobot {
 
-  Chassis _chassis = Chassis.getInstance();
-  XboxController controller = new XboxController(0);
-  double autoDistance = 30; //inches
-  double fixedVBus = 0;
-  double fixedVBusTime = 0;
-
   /**
    * This function is run when the robot is first started up and should be used
    * for any initialization code.
    */
   @Override
   public void robotInit() {
-    _chassis.ConfigMotors();
   }
 
   @Override
   public void autonomousInit() {
-    autonInitChassis();
   }
 
   @Override
   public void autonomousPeriodic() {
-    _chassis.updateAuton();
   }
 
   @Override
@@ -63,36 +48,4 @@ public class Robot extends TimedRobot {
   @Override
   public void testPeriodic() {
   }
-
-    public void autonInitChassis(){
-      _chassis.zeroEncoders();
-      _chassis.initAutonStartTime();
-      if (autoDistance > 0){
-        _chassis.configDriveSetDistance(autoDistance);
-      } else if (fixedVBus != 0) {
-        _chassis.configDriveFixedVBus(fixedVBus, fixedVBusTime);
-      } else {
-        _chassis.configDoNothing();
-      }
-    }
-
-    public void teleopChassis(){
-      double throttle = -controller.getY(Hand.kLeft);
-      double turn = -controller.getX(Hand.kRight);
-      _chassis.arcadeDriveCmd(throttle, turn);
-      if (controller.getAButtonReleased()){
-        _chassis.zeroEncoders();
-      }
-      if (controller.getBButtonReleased()){
-        printEncoderPositions();
-      }
-      if (controller.getStartButtonReleased()) {
-        System.out.println("CMD VALUE: " + controller.getY(Hand.kLeft));
-      }
-    }
-
-    public void printEncoderPositions(){
-      System.out.println("LEFT POS:  " + _chassis.getLeftEncoderPos());
-      System.out.println("RIGHT POS: " + _chassis.getRightEncoderPos());
-    }
 }
