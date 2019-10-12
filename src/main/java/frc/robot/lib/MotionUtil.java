@@ -1,8 +1,8 @@
 package frc.robot.lib;
 
-java.lang.Math;
+import java.lang.Math;
 
-public class MotionUtils {
+public class MotionUtil {
 
     public static double deg2rad(double deg){
         return deg * Math.PI / 180;

@@ -109,4 +109,6 @@ public class PathFollower {
     public boolean isFinished(){
         return segment >= trajectory.length();
     }
+
+    
 }
