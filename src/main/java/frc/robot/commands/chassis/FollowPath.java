@@ -10,7 +10,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 
 import jaci.pathfiner.Pathfinder;
-import sun.jvm.hotspot.code.DebugInfoReadStream;
 import jaci.pathfinder.Trajectory;
 import jaci.pathfinder.modifiers.TankModifier;
 
@@ -97,7 +96,7 @@ public class FollowPath extends Command implements Sendable {
     protected void initialize() {
         notifier = new Notifier(this::notifierExecute);
         this.trajectory = trajectorySupplier.get();
-        this.modifier = new TankModifier(trajectory).modify(Constants.kDrive_Motion_)
+        
     }
 }
 

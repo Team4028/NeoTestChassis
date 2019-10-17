@@ -110,5 +110,10 @@ public class PathFollower {
         return segment >= trajectory.length();
     }
 
-    
+    /**
+     * @return whether we have finished tracking this object or not.
+     */
+    public boolean isFinished(){
+        return segments
+    }
 }
